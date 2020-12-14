@@ -1,6 +1,10 @@
-# Docker Registry Helm Chart
+# Docker Registry Mirror Helm Chart
 
-This directory contains a Kubernetes chart to deploy a private Docker Registry.
+This directory contains a Kubernetes chart to deploy a private Docker Registry Mirror that will run the registry as a pull through cache and cache the request to Docker hub.
+
+Since November 20, 2020, [Anonymous and Free Docker Hub users are limited to 100 and 200 container image pull requests per six hours](https://www.docker.com/increase-rate-limits). To mitigate the impact of this limit, this Helm chart allows you to deploy a Docker Registry as registry mirror that can be used to cache pull request to docker hub.
+
+Forked from https://github.com/twuni/docker-registry.helm
 
 ## Prerequisites Details
 
