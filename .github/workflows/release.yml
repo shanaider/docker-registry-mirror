@@ -48,6 +48,7 @@ jobs:
         echo "Commit helm charts to gh-pages branch..."
         cp --force -u .helm-release-tmp/charts/*.tgz ${gh_pages_worktree}/charts/
         cp --force .helm-release-tmp/charts/index.yaml ${gh_pages_worktree}/index.yaml
+        cp --force README.md ${gh_pages_worktree}/README.md
         rm -Rf .helm-release-packages
         pushd "$gh_pages_worktree" > /dev/null
         git add --all
