@@ -9,6 +9,8 @@ jobs:
     name: Release Helm Chart
     runs-on: ubuntu-latest
     steps:
+    - name: helm-build-dependencies
+      run: helm dep build .
     - name: helm-check
       run: helm lint .
 
@@ -19,7 +21,7 @@ jobs:
       
     - name: Release Helm Chart  
       env:
-        CR_TOKEN: "${{ secrets.GITHUB_ACCESS_TOKEN }}"
+        CR_TOKEN: "${{ secrets.GH_ACCESS_TOKEN }}"
       run: |
         owner=$(cut -d '/' -f 1 <<< "$GITHUB_REPOSITORY")
         repo=$(cut -d '/' -f 2 <<< "$GITHUB_REPOSITORY")
@@ -33,20 +35,17 @@ jobs:
         
         if [[ ! -d "${gh_pages_worktree}/charts" ]]
         then
+            echo "Packing first chart release & build index..."
             mkdir -p ${gh_pages_worktree}/charts
+            helm repo index .helm-release-tmp/charts --url https://${owner}.github.io/${repo}/charts
         else 
-            cp -r ${gh_pages_worktree}/charts/* .helm-release-packages/charts/
+            echo "Packing release chart & update index..."
+            helm repo index --url https://${owner}.github.io/${repo}/charts --merge "${gh_pages_worktree}/index.yaml" .helm-release-tmp/charts
         fi
-        echo "Packing current version helm charts..."
-        helm package ./deploy/charts/magda-ckan-connector --destination .helm-release-packages/charts --dependency-update --save=false
-        
-        echo "Re-Create helm repo index..."
-        helm repo index .helm-release-packages/charts --url https://${owner}.github.io/${repo}/charts
-        
         echo "Commit helm charts to gh-pages branch..."
-        cp --force .helm-release-packages/charts/index.yaml ${gh_pages_worktree}/index.yaml
-        unlink .helm-release-packages/charts/index.yaml
-        cp --force -u .helm-release-packages/charts/* ${gh_pages_worktree}/charts/
+        cp --force -u .helm-release-tmp/charts/*.tgz ${gh_pages_worktree}/charts/
+        cp --force .helm-release-tmp/charts/index.yaml ${gh_pages_worktree}/index.yaml
+        rm -Rf .helm-release-packages
         pushd "$gh_pages_worktree" > /dev/null
         git add --all
         git commit --message="Update helm repo" --signoff

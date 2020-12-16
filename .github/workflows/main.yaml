@@ -7,4 +7,7 @@ jobs:
     name: Helm Lint
     runs-on: ubuntu-latest
     steps:
-    - run: helm lint .
+    - name: helm-build-dependencies
+      run: helm dep build .
+    - name: helm-lint
+      run:  helm lint .
