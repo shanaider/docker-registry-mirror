@@ -1,13 +1,8 @@
 apiVersion: v1
-description: A Helm chart for Docker Registry
-name: docker-registry
+description: A Helm chart for Docker Registry Mirror
+name: docker-registry-mirror
 version: 1.10.0
 appVersion: 2.7.1
-home: https://hub.docker.com/_/registry/
-icon: https://hub.docker.com/public/images/logos/mini-logo.svg
-maintainers:
-- email: devin@canterberry.cc
-  name: Devin Canterberry
-  url: https://canterberry.cc/
+home: https://github.com/t83714/docker-registry-mirror
 sources:
-- https://github.com/docker/distribution-library-image
+- https://github.com/t83714/docker-registry-mirror

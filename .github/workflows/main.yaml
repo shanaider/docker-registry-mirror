@@ -1,0 +1,10 @@
+name: Main CI Workflow
+
+on: push
+
+jobs:
+  build-test-docker:
+    name: Helm Lint
+    runs-on: ubuntu-latest
+    steps:
+    - run: helm lint .

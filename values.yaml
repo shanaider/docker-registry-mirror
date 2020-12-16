@@ -20,7 +20,7 @@ image:
     # - name: docker
 service:
   name: registry
-  type: ClusterIP
+  type: NodePort
   # sessionAffinity: None
   # sessionAffinityConfig: {}
   # clusterIP:
@@ -147,3 +147,18 @@ extraVolumes: []
 #        - key: cloudfront.pem
 #          path: cloudfront.pem
 #          mode: 511
+
+## Pass extra environment variables to the Docker Registry container.
+##
+extraVars:
+# - name: EXTRA_VAR_1
+#  value: extra-var-value-1
+# - name: EXTRA_VAR_2
+#   value: extra-var-value-2
+
+# Configure the docker registry as a pull-through cache to Docker Hub
+# Optionally provide docker hub (or your private registry) username & password
+proxy:
+  remoteurl: https://registry-1.docker.io
+  username:
+  password:

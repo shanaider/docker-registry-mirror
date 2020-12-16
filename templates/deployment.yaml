@@ -158,6 +158,19 @@ spec:
             - name: REGISTRY_STORAGE_DELETE_ENABLED
               value: "true"
 {{- end }}
+            - name: REGISTRY_PROXY_REMOTEURL
+              value: {{ .Values.proxy.remoteurl | quote }}
+{{- if .Values.proxy.username }}
+            - name: REGISTRY_PROXY_USERNAME
+              value: {{ .Values.proxy.username | quote }}
+{{- end }}
+{{- if .Values.proxy.password }}
+            - name: REGISTRY_PROXY_PASSWORD
+              value: {{ .Values.proxy.password | quote }}
+{{- end }}
+{{- if .Values.extraVars }}
+{{ toYaml .Values.extraVars | indent 12 }}
+{{- end }}
           volumeMounts:
 {{- if .Values.secrets.htpasswd }}
             - name: auth

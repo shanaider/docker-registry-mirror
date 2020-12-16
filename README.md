@@ -1,10 +1,12 @@
 # Docker Registry Mirror Helm Chart
 
-This directory contains a Kubernetes chart to deploy a private Docker Registry Mirror that will run the registry as a pull through cache and cache the request to Docker hub.
+This directory contains a Kubernetes chart to deploy a private Docker Registry Mirror that will run the registry as a "pull through cache" and cache the requests to Docker hub. Please note, you cannot push to the docker registry when it works under "pull through cache" mode.
 
 Since November 20, 2020, [Anonymous and Free Docker Hub users are limited to 100 and 200 container image pull requests per six hours](https://www.docker.com/increase-rate-limits). To mitigate the impact of this limit, this Helm chart allows you to deploy a Docker Registry as registry mirror that can be used to cache pull request to docker hub.
 
 Forked from https://github.com/twuni/docker-registry.helm
+
+This Helm chart uses official Docker Registry image: https://hub.docker.com/_/registry/
 
 ## Prerequisites Details
 
@@ -21,13 +23,70 @@ This chart will do the following:
 First, add the repo:
 
 ```console
-$ helm repo add twuni https://helm.twun.io
+$ helm repo add docker-registry-mirror https://t83714.github.io/docker-registry-mirror
 ```
 
 To install the chart, use the following:
 
 ```console
-$ helm install twuni/docker-registry
+$ helm upgrade docker-registry-mirror docker-registry-mirror/docker-registry-mirror
+```
+
+Set username & password to remote registry (e.g. docker hub):
+
+```console
+$ helm upgrade --set proxy.username=xxxx,proxy.password=xxx docker-registry-mirror docker-registry-mirror/docker-registry-mirror 
+```
+
+## Configure Minikube to use registry-mirror as Pull cache mirror
+
+1. Find nodePort allocated to the registry mirror:
+
+```console
+kubectl get svc --all-namespaces --selector=app=docker-registry-mirror -oyaml | grep nodePort
+```
+
+This command will list the nodePort assign to your registry mirror service.
+
+To verify the nodePort & registry mirror installation:
+```console
+# Log into Minikube VM via SSH
+minikube ssh
+curl http://localhost:32307/v2/_catalog  
+```
+
+We should see:
+
+```console
+{"repositories":[]}
+```
+
+Here, assume port `32307` is the nodePort we just find out.
+
+2. Edit /etc/docker/daemon.json
+
+```console
+# Log into Minikube VM via SSH
+minikube ssh
+```
+
+Edit /etc/docker/daemon.json
+```console 
+sudo vi /etc/docker/daemon.json
+```
+
+and add the followings to the configuration file:
+
+```json
+"registry-mirrors": ["https://localhost:32307"]
+```
+
+Here port `32307` is the nodePort we find out in step 1.
+
+```console
+# Apply the config and restart docker
+sudo systemctl daemon-reload
+sudo systemctl restart docker
 ```
 
 ## Configuration
@@ -37,6 +96,9 @@ their default values.
 
 | Parameter                   | Description                                                                                | Default         |
 |:----------------------------|:-------------------------------------------------------------------------------------------|:----------------|
+| `proxy.remoteurl`           | The url of the remote docker registry to be cached                                         | `https://registry-1.docker.io`  |
+| `proxy.username`            | Remote docker registry username (optional)                                                 | `nil`  |
+| `proxy.password`            | Remote docker registry password (optional)                                                 | `nil`  |
 | `image.pullPolicy`          | Container pull policy                                                                      | `IfNotPresent`  |
 | `image.repository`          | Container image to use                                                                     | `registry`      |
 | `image.tag`                 | Container image tag to deploy                                                              | `2.7.1`         |
@@ -90,6 +152,7 @@ their default values.
 | `ingress.tls`               | Ingress TLS configuration (YAML)                                                           | `[]`            |
 | `extraVolumeMounts`         | Additional volumeMounts to the registry container                                          | `[]`            |
 | `extraVolumes`              | Additional volumes to the pod                                                              | `[]`            |
+| `extraVars`                 | Pass extra environment variables to the Docker Registry container                          | `nil`           |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to
 `helm install`.
