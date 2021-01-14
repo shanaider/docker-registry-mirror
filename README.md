@@ -29,13 +29,13 @@ $ helm repo add docker-registry-mirror https://t83714.github.io/docker-registry-
 To install the chart, use the following:
 
 ```console
-$ helm upgrade docker-registry-mirror docker-registry-mirror/docker-registry-mirror
+$ helm upgrade --install docker-registry-mirror docker-registry-mirror/docker-registry-mirror
 ```
 
 Set username & password to remote registry (e.g. docker hub):
 
 ```console
-$ helm upgrade --set proxy.username=xxxx,proxy.password=xxx docker-registry-mirror docker-registry-mirror/docker-registry-mirror 
+$ helm upgrade --install --set proxy.username=xxxx,proxy.password=xxx docker-registry-mirror docker-registry-mirror/docker-registry-mirror 
 ```
 
 ## Configure Minikube to use registry-mirror as Pull cache mirror
