@@ -55,7 +55,7 @@ minikube ssh
 curl http://localhost:xxxxx/v2/_catalog  
 ```
 
-Here, assume port `xxxxx` is the nodePort we just find out via "kubectl" command.
+Here, `xxxxx` is the nodePort number we just find out via "kubectl" command.
 
 We should see:
 
@@ -74,7 +74,7 @@ Under key `HostOptions.EngineOptions`, add or replace (if exists) key `RegistryM
 ]
 ```
 
-Here, port `xxxxx` is the nodePort we find out via "kubectl" command in step 1.
+Here, `xxxxx` is the nodePort number we find out via "kubectl" command in step 1.
 
 3. Restart minikube
 
