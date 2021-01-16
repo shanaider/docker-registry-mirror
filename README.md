@@ -46,14 +46,16 @@ $ helm upgrade --install --set proxy.username=xxxx,proxy.password=xxx docker-reg
 kubectl get svc --all-namespaces --selector=app=docker-registry-mirror -oyaml | grep nodePort
 ```
 
-This command will list the nodePort assign to your registry mirror service.
+This command will list the `nodePort` assign to your registry mirror service.
 
 To verify the nodePort & registry mirror installation:
 ```console
 # Log into Minikube VM via SSH
 minikube ssh
-curl http://localhost:32307/v2/_catalog  
+curl http://localhost:xxxxx/v2/_catalog  
 ```
+
+Here, assume port `xxxxx` is the nodePort we just find out via "kubectl" command.
 
 We should see:
 
@@ -61,33 +63,28 @@ We should see:
 {"repositories":[]}
 ```
 
-Here, assume port `32307` is the nodePort we just find out.
+2. Edit minikube configuration to use registry mirror
 
-2. Edit /etc/docker/daemon.json
+Open minikube configuration file: `~/.minikube/machines/minikube/config.json`.
+
+Under key `HostOptions.EngineOptions`, add or replace (if exists) key `RegistryMirror` as:
+```js
+"RegistryMirror": [
+    "http://localhost:xxxxx"
+]
+```
+
+Here, port `xxxxx` is the nodePort we find out via "kubectl" command in step 1.
+
+3. Restart minikube
 
 ```console
-# Log into Minikube VM via SSH
-minikube ssh
+# Apply the config and restart minikube
+minikube stop
+minikube start
 ```
 
-Edit /etc/docker/daemon.json
-```console 
-sudo vi /etc/docker/daemon.json
-```
-
-and add the followings to the configuration file:
-
-```json
-"registry-mirrors": ["https://localhost:32307"]
-```
-
-Here port `32307` is the nodePort we find out in step 1.
-
-```console
-# Apply the config and restart docker
-sudo systemctl daemon-reload
-sudo systemctl restart docker
-```
+After restart, you should see docker pull requests appearing in docker registry mirror pod logs.
 
 ## Configuration
 
