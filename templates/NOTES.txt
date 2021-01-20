@@ -17,3 +17,7 @@
   echo "Visit http://127.0.0.1:8080 to use your application"
   kubectl -n {{ .Release.Namespace }} port-forward $POD_NAME 8080:5000
 {{- end }}
+{{- if contains "NodePort" .Values.service.type }}
+2. Get registry nodePort by running command:
+  kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ template "docker-registry.fullname" . }}
+{{- end }}
