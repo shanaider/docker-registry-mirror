@@ -92,6 +92,9 @@ edit /etc/containerd/config.toml
     endpoint = ["https://docker-registry-mirror.example.com"]
 [plugins."io.containerd.grpc.v1.cri".registry.configs."docker-registry-mirror.example.com".tls]
   insecure_skip_verify = true
+```
+
+```
 sudo systemctl restart containerd
 ```
 
@@ -115,7 +118,7 @@ insecure = true
 ```
 sudo systemctl restart crio
 ```
-#for kaniko builder
+## for kaniko builder
 ```
 REGISTRY_MIRROR=docker-registry-mirror.example.com
 executor \ 
