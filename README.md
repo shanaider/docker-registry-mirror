@@ -4,7 +4,7 @@ helm repo add registry-mirror https://shanaider.github.io/docker-registry-mirror
 ```
 # Helm install
 ```
-helm upgrade --install https://shanaider.github.io/docker-registry-mirror-chart/
+helm upgrade --install my-docker-registry-mirror registry-mirror/docker-registry-mirror 
 ```
 # Helm values
 1. inside the container need to connect the https://registry-1.docker.io if your environment can't directly to internet please consider add your env of proxy server
